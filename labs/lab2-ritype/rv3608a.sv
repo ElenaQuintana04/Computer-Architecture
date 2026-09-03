@@ -68,6 +68,12 @@ module rv3608a (
 			`OPCODE_OP_IMM: begin
 				casez ({insn_funct7, insn_funct3})
 					10'b zzzzzzz_000 /* ADDI  */: alu_op = `ALU_ADD;
+					10'b zzzzzzz_100 /* XORI  */: alu_op = `ALU_XOR;
+					10'b zzzzzzz_110 /* ORI  */: alu_op = `ALU_OR;
+					10'b zzzzzzz_111 /* ANDI  */: alu_op = `ALU_AND;
+					10'b 0000000_001 /* SLLI  */: alu_op = `ALU_SS;
+					10'b 0000000_101 /* SRLI  */: alu_op = `ALU_ADD;
+					10'b 0100000_101 /* SRAI  */: alu_op = `ALU_XOR;
 				endcase
 			end
 		endcase
