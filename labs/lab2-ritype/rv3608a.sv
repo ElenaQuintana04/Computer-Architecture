@@ -71,9 +71,9 @@ module rv3608a (
 					10'b zzzzzzz_100 /* XORI  */: alu_op = `ALU_XOR;
 					10'b zzzzzzz_110 /* ORI  */: alu_op = `ALU_OR;
 					10'b zzzzzzz_111 /* ANDI  */: alu_op = `ALU_AND;
-					10'b 0000000_001 /* SLLI  */: alu_op = `ALU_SS;
-					10'b 0000000_101 /* SRLI  */: alu_op = `ALU_ADD;
-					10'b 0100000_101 /* SRAI  */: alu_op = `ALU_XOR;
+					10'b 0000000_001 /* SLLI  */: alu_op = `ALU_SLL;
+					10'b 0000000_101 /* SRLI  */: alu_op = `ALU_SRL;
+					10'b 0100000_101 /* SRAI  */: alu_op = `ALU_SRA;
 				endcase
 			end
 		endcase
