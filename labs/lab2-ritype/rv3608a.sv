@@ -64,7 +64,12 @@ module rv3608a (
 		illegalinsn = 0;
 		case (insn_opcode)
 			0: alu_op = `ALU_ADD;	// NOP
-
+			`OPCODE_OP: begin
+				default: begin
+						illegalinsn = 1; 
+						alu_op = 0;
+					end
+			end
 			`OPCODE_OP_IMM: begin
 				casez ({insn_funct7, insn_funct3})
 					10'b zzzzzzz_000 /* ADDI  */: alu_op = `ALU_ADD;
@@ -74,8 +79,16 @@ module rv3608a (
 					10'b 0000000_001 /* SLLI  */: alu_op = `ALU_SLL;
 					10'b 0000000_101 /* SRLI  */: alu_op = `ALU_SRL;
 					10'b 0100000_101 /* SRAI  */: alu_op = `ALU_SRA;
+					default: begin
+						illegalinsn = 1; 
+						alu_op = 0;
+					end
 				endcase
 			end
+			default: begin
+						illegalinsn = 1; 
+						alu_op = 0;
+					end
 		endcase
 	end
 
