@@ -27,6 +27,7 @@
 // OPCODES
 `define OPCODE_OP_IMM   7'b00_100_11
 `define OPCODE_OP       7'b01_100_11
+`define OPCODE_SYSTEM   7'b1110011
 
 // 10-bit {insn_funct7, insn_funct3} opcodes
 `define OPCODE_SLLI 10'b0000000_001 
