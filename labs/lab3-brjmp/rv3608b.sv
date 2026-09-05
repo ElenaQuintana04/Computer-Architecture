@@ -108,6 +108,8 @@ module rv3608b (
 
     // Code below sets alu_op
     always_comb begin
+		alu_op = `ALU_ADD;
+    	illegalinsn = 0;
 		case (insn_opcode)
 			`OPCODE_OP_IMM: begin
 				casez ({insn_funct7, insn_funct3})
@@ -149,7 +151,7 @@ module rv3608b (
 					3'b 101 /* BGE  */: alu_op = `ALU_SLT;
 					3'b 110 /* BLTU  */: alu_op = `ALU_SLTU;
 					3'b 111 /* BGEU  */: alu_op = `ALU_SLTU;
-                    default: alu_op = `ALU_ADD;
+                    default:  illegalinsn = 1;
                 endcase
             end
 			`OPCODE_JAL: alu_op = `ALU_ADD;
