@@ -65,6 +65,7 @@ module rv3608a (
 		alu_op = `ALU_ADD;
 		case (insn_opcode)
 			0: alu_op = `ALU_ADD;	// NOP
+			`OPCODE_SYSTEM: illegalinsn = 1;
 			`OPCODE_OP: begin
 				casez ({insn_funct7, insn_funct3})
 					10'b0000000_000: alu_op = `ALU_ADD;  // ADD
