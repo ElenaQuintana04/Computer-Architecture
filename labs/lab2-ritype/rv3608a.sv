@@ -62,14 +62,22 @@ module rv3608a (
 	logic  [4:0] alu_op;
     always_comb begin
 		illegalinsn = 0;
+		alu_op = `ALU_ADD;
 		case (insn_opcode)
 			0: alu_op = `ALU_ADD;	// NOP
 			`OPCODE_OP: begin
 				casez ({insn_funct7, insn_funct3})
-					default: begin
-						illegalinsn = 1; 
-						alu_op = 0;
-					end
+					10'b0000000_000: alu_op = `ALU_ADD;  // ADD
+                    10'b0100000_000: alu_op = `ALU_SUB;  // SUB
+                    10'b0000000_001: alu_op = `ALU_SLL;  // SLL
+                    10'b0000000_010: alu_op = `ALU_SLT;  // SLT
+                    10'b0000000_011: alu_op = `ALU_SLTU; // SLTU
+                    10'b0000000_100: alu_op = `ALU_XOR;  // XOR
+                    10'b0000000_101: alu_op = `ALU_SRL;  // SRL
+                    10'b0100000_101: alu_op = `ALU_SRA;  // SRA
+                    10'b0000000_110: alu_op = `ALU_OR;   // OR
+                    10'b0000000_111: alu_op = `ALU_AND;  // AND
+					default: illegalinsn = 1;
 				endcase
 			end
 			`OPCODE_OP_IMM: begin
@@ -81,10 +89,7 @@ module rv3608a (
 					10'b 0000000_001 : alu_op = `ALU_SLL; //SLLI
 					10'b 0000000_101 : alu_op = `ALU_SRL; //SRLI
 					10'b 0100000_101 : alu_op = `ALU_SRA; //SRAI
-					default: begin
-						illegalinsn = 1; 
-						alu_op = 0;
-					end
+					default: illegalinsn = 1;
 				endcase
 			end
 			default: begin
