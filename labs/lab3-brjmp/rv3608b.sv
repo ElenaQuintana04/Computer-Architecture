@@ -138,28 +138,25 @@ module rv3608b (
 					10'b 0000000_111 /* AND  */: alu_op = `ALU_AND;
 					default: illegalinsn = 1;
 				endcase
-      end
+      		end
 
-      `OPCODE_BRANCH: begin
+      		`OPCODE_BRANCH: begin
 				case (insn_funct3)
-          // LAB need to map branches to ALU operations here
 					3'b 000 /* BEQ  */: alu_op = `ALU_SUB;
-          3'b 001 /* BNE  */: alu_op = `ALU_SUB;
-          3'b 100 /* BLT  */: alu_op = `ALU_SLT;
-          3'b 101 /* BGE  */: alu_op = `ALU_SLT;
-          3'b 110 /* BLTU */: alu_op = `ALU_SLTU;
-          3'b 111 /* BGEU */: alu_op = `ALU_SLTU;
-          default: alu_op = `ALU_ADD;
-        endcase
-      end
-        
-        
-      `OPCODE_JAL: alu_op = `ALU_ADD;
-      
-      `OPCODE_JALR: alu_op = `ALU_ADD;
+		        	3'b 001 /* BNE  */: alu_op = `ALU_SUB;
+		        	3'b 100 /* BLT  */: alu_op = `ALU_SLT;
+		        	3'b 101 /* BGE  */: alu_op = `ALU_SLT;
+		        	3'b 110 /* BLTU */: alu_op = `ALU_SLTU;
+		        	3'b 111 /* BGEU */: alu_op = `ALU_SLTU;
+          			default: alu_op = `ALU_ADD;
+        		endcase
+      		end
+			
+      		`OPCODE_JAL: alu_op = `ALU_ADD;
+			`OPCODE_JALR: alu_op = `ALU_ADD;
 
 			default: illegalinsn = 1;
-    endcase
+    	endcase
     end
 
     // instantiate ALU
@@ -209,7 +206,7 @@ module rv3608b (
 		    `OPCODE_BRANCH: begin
           case (insn_funct3)
             // handle different branch types here
-					  3'b 000 /* BEQ  */: begin if (alu_eq_zero) npc = pc + imm_b_sext; end
+			3'b 000 /* BEQ  */: begin if (alu_eq_zero) npc = pc + imm_b_sext; end
             3'b 001 /* BNE  */: begin if (!alu_eq_zero) npc = pc + imm_b_sext; end
             3'b 100 /* BLT  */: begin if (!alu_eq_zero) npc = pc + imm_b_sext; end
             3'b 101 /* BGE  */: begin if ( alu_eq_zero) npc = pc + imm_b_sext; end
