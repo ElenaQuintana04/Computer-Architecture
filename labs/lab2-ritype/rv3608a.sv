@@ -92,10 +92,7 @@ module rv3608a (
 					default: illegalinsn = 1;
 				endcase
 			end
-			default: begin
-						illegalinsn = 1; 
-						alu_op = 0;
-					end
+			default: illegalinsn = 1;
 		endcase
 	end
 
