@@ -49,6 +49,9 @@ module rv3608c (
     logic [31:0] dmem_rd_addr;
     logic [31:0] dmem_rd_data;
 
+	assign dmem_rd_addr = alu_result;
+	assign dmem_rd_data = dmem[dmem_rd_addr];
+
     // Debugging
     logic   [4:0] d_rd;
     logic   [31:0] d_x0;
