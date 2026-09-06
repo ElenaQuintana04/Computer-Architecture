@@ -238,9 +238,7 @@ module rv3608c (
 				dmem_wr_enable = 1;
 				dmem_wr_addr = alu_result;
 				dmem_wr_data = regfile[insn_rs2];
-                regwrite = 1;
-				rfilewdata = dmem_w_data;
-		        $display("sw 0x%08x to = 0x%08x", rs2_value, dmem_wr_addr);
+				$display("sw 0x%08x to = 0x%08x", regfile[insn_rs2], dmem_wr_addr);
             end
 
 			default: illegalinsn = 1;
