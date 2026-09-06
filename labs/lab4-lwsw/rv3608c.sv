@@ -98,11 +98,14 @@ module rv3608c (
 	// B - conditionals
 	logic   [12:0] imm_b;
 	assign {imm_b[12], imm_b[10:5]} = insn_funct7, {imm_b[4:1], imm_b[11]} = insn_rd, imm_b[0] = 1'b0;
-
 	// J - unconditional jumps
 	logic   [20:0] imm_j;
 	assign  {imm_j[20], imm_j[10:1], imm_j[11], imm_j[19:12], imm_j[0]} = {insn[31:12], 1'b0};
-
+	// S - Store
+    logic [11:0] imm_s;
+    assign imm_s = {insn_funct7, insn_rd};
+	
+	wire 	[31:0] imm_s_sext = 32'(signed'(imm_s));
 	wire    [31:0] imm_b_sext = 32'(signed'(imm_b));
 	wire    [31:0] imm_j_sext = 32'(signed'(imm_j));
 
@@ -111,8 +114,8 @@ module rv3608c (
     logic  [31:0] alu_result;
     logic  alu_eq;
     wire   [31:0] alu_op_a = regfile[insn_rs1];
-	wire   [31:0] alu_op_b = insn_opcode == `OPCODE_OP_IMM ? 
-                                imm_val : regfile[insn_rs2];
+	wire   [31:0] alu_op_b = (insn_opcode == `OPCODE_OP_IMM || insn_opcode == `OPCODE_LOAD) ? imm_val :
+                        	 (insn_opcode == `OPCODE_STORE)  ? imm_s_sext : regfile[insn_rs2];
 	logic   [4:0] alu_op;
 
     // Code below sets alu_op
