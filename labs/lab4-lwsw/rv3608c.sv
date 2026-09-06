@@ -154,11 +154,21 @@ module rv3608c (
 
             `OPCODE_BRANCH: begin
 				case (insn_funct3)
-                    // LAB need to map branches to ALU operations here
-					3'b 000 /* BEQ  */: alu_op = `ALU_SUB;
-                endcase
-            end
-
+				  3'b 000 /* BEQ  */: alu_op = `ALU_SUB;
+		          3'b 001 /* BNE  */: alu_op = `ALU_SUB;
+		          3'b 100 /* BLT  */: alu_op = `ALU_SLT;
+		          3'b 101 /* BGE  */: alu_op = `ALU_SLT;
+		          3'b 110 /* BLTU */: alu_op = `ALU_SLTU;
+		          3'b 111 /* BGEU */: alu_op = `ALU_SLTU;
+         		  default: alu_op = `ALU_ADD;
+        		endcase
+      		 end
+			`OPCODE_JAL: alu_op = `ALU_ADD;
+			`OPCODE_JALR: alu_op = `ALU_ADD;
+			
+			`OPCODE_STORE: alu_op = `ALU_ADD;
+			`OPCODE_LOAD: alu_op = `ALU_ADD;
+      
 			default: illegalinsn = 1;
         endcase
     end
@@ -195,30 +205,41 @@ module rv3608c (
 			end
 
             `OPCODE_JAL: begin
-                // LAB implement JAL control signals here
+                npc = pc + imm_j_sext;
+				rfilewdata = pc + 4;
+				regwrite = 1; 
             end
 
             `OPCODE_JALR: begin
-                // LAB implement JALR control signals here
+				npc = (regfile[insn_rs1] + imm_i_sext) & ~32'b1;
+				rfilewdata = pc + 4;
+				regwrite = 1; 
             end
-
-			// branch instructions: Branch If Equal, Branch Not Equal, Branch Less Than, Branch Greater Than, Branch Less Than Unsigned, Branch Greater Than Unsigned
+			
 		    `OPCODE_BRANCH: begin
                 case (insn_funct3)
-                    // handle different branch types here
-					3'b 000 /* BEQ  */: begin if (alu_eq_zero) npc = pc + imm_b_sext; end
-                    // LAB implement missing branch types
-					default: illegalinsn = 1;
+                      3'b 000 /* BEQ  */: begin if (alu_eq_zero) npc = pc + imm_b_sext; end
+			          3'b 001 /* BNE  */: begin if (!alu_eq_zero) npc = pc + imm_b_sext; end
+			          3'b 100 /* BLT  */: begin if (!alu_eq_zero) npc = pc + imm_b_sext; end
+			          3'b 101 /* BGE  */: begin if ( alu_eq_zero) npc = pc + imm_b_sext; end
+			          3'b 110 /* BLTU */: begin if (!alu_eq_zero) npc = pc + imm_b_sext; end
+			          3'b 111 /* BGEU */: begin if ( alu_eq_zero) npc = pc + imm_b_sext; end
+			          default: illegalinsn = 1;
 				endcase
 			end
 
             `OPCODE_LOAD: begin
-                // LAB implement LW here
+				regwrite = 1;
+				rfilewdata = dmem_rd_data;
 		        $display("lw from 0x%08x = 0x%08x", dmem_rd_addr, dmem_rd_data);
             end
 
             `OPCODE_STORE: begin
-                // LAB implement SW here
+				dmem_wr_enable = 1;
+				dmem_wr_addr = alu_result;
+				dmem_wr_data = regfile[insn_rs2];
+                regwrite = 1;
+				rfilewdata = dmem_w_data;
 		        $display("sw 0x%08x to = 0x%08x", rs2_value, dmem_wr_addr);
             end
 
@@ -243,7 +264,8 @@ module rv3608c (
             x10 <= regfile[10];
     	end
 
-        // LAB update the data memory here
+		if (dmem_wr_enable)
+			dmem[dmem_wr_addr] <= dmem_wr_data;
         
         // reset
         if (reset) begin
